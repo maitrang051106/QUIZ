@@ -15,16 +15,22 @@
             <button class="btn-chuong" onclick="loadData('chuong2.txt', 'Chương 2')">Chương 2</button>
             <button class="btn-chuong" onclick="loadData('chuong3.txt', 'Chương 3')">Chương 3</button>
             <button class="btn-chuong" onclick="loadData('chuong4.txt', 'Chương 4')">Chương 4</button>
+            <button class="btn-chuong" onclick="loadData('chuong5.txt', 'Chương 5')">Chương 5</button>
+            <button class="btn-lythuyet" onclick="loadTheory('lythuyet1.txt', 'Lý thuyết Chương 1')">Lý thuyết 1</button>
+            <button class="btn-lythuyet" onclick="loadTheory('lythuyet2.txt', 'Lý thuyết Chương 2')">Lý thuyết 2</button>
+            <button class="btn-lythuyet" onclick="loadTheory('lythuyet3.txt', 'Lý thuyết Chương 3')">Lý thuyết 3</button>
+            <button class="btn-lythuyet" onclick="loadTheory('lythuyet4.txt', 'Lý thuyết Chương 4')">Lý thuyết 4</button>
+            <button class="btn-lythuyet" onclick="loadTheory('lythuyet5.txt', 'Lý thuyết Chương 5')">Lý thuyết 5</button>
             <button class="btn-chuong" onclick="openLocalFile()">Mở file .txt (tự chọn)</button>
         </div>
         <input id="file-input" type="file" accept=".txt" class="hidden" onchange="loadFromFile(event)" />
         <div id="error" class="hidden" style="margin-top: 15px; color: #c0392b; text-align: center;"></div>
     </div>
 
-    <div id="quiz" class="quiz-container hidden">
+    <div id="theory" class="quiz-container hidden">
         <button class="back-btn" onclick="goBack()">⬅ Quay lại menu</button>
-        <h2 id="title-chuong"></h2>
-        <div id="flashcard-list"></div>
+        <h2 id="title-theory"></h2>
+        <div id="theory-content"></div>
     </div>
 
     <script>
@@ -121,6 +127,29 @@
         function goBack() {
             document.getElementById('menu').classList.remove('hidden');
             document.getElementById('quiz').classList.add('hidden');
+            document.getElementById('theory').classList.add('hidden');
+        }
+
+        async function loadTheory(fileName, title) {
+            clearError();
+            try {
+                const response = await fetch(fileName);
+                if (!response.ok) throw new Error("Không tìm thấy file lý thuyết!");
+                const text = await response.text();
+                renderTheory(text, title);
+            } catch (error) {
+                showError("Không thể tải file lý thuyết. Hãy chạy trang web bằng Live Server / GitHub Pages hoặc sử dụng tính năng mở file để chọn file .txt.");
+                console.warn(error);
+            }
+        }
+
+        function renderTheory(text, title) {
+            const contentArea = document.getElementById('theory-content');
+            contentArea.innerHTML = text.replace(/\n/g, '<br>'); // Chuyển dòng thành <br> để hiển thị
+
+            document.getElementById('menu').classList.add('hidden');
+            document.getElementById('theory').classList.remove('hidden');
+            document.getElementById('title-theory').innerText = title;
         }
     </script>
 </body>
