@@ -1,0 +1,29 @@
+1. Khái niệm và Chức năng của Hệ Điều Hành (HĐH)
+Vị trí: HĐH là một hệ thống chương trình nằm giữa phần cứng máy tính và các chương trình ứng dụng. Một hệ thống tính toán bao gồm bốn thành phần chính: phần cứng, HĐH, chương trình ứng dụng và người dùng.
+Mục tiêu: Cung cấp môi trường để thực thi ứng dụng, giúp máy tính dễ sử dụng, thuận lợi và hiệu quả hơn, chuẩn hóa giao diện người dùng và khai thác tối đa hiệu suất phần cứng.
+Chức năng chính:
+Giả lập một máy tính ảo: Ẩn dấu các chi tiết thực hiện phức tạp, đơn giản hóa việc lập trình (không phải làm việc với dãy nhị phân) và cho phép mỗi chương trình nghĩ rằng nó sở hữu toàn bộ tài nguyên.
+Quản lý tài nguyên: HĐH phân phối các tài nguyên (CPU, bộ nhớ, thiết bị vào/ra, file) cho các chương trình, giải quyết tranh chấp và đảm bảo toàn vẹn dữ liệu.
+2. Lịch sử phát triển
+Sự phát triển của HĐH gắn liền với các cột mốc của máy tính điện tử:
+1946: Máy ENIAC ra đời dựa trên đèn điện tử.
+1948–1970: Phần cứng rất đắt đỏ, cần tối ưu hóa hiệu suất. Giải pháp Xử lý theo lô (batch processing) ra đời để giảm lãng phí thời gian máy.
+1981–nay: Kỷ nguyên của các hệ thống phân tán, máy tính cá nhân và từ năm 1995 là sự bùng nổ của thiết bị di động, hệ thống ngang hàng (P2P), và điện toán đám mây (Cloud computing).
+3. Định nghĩa và Phân loại
+Định nghĩa: Tùy theo góc độ quan sát, HĐH có thể được định nghĩa là hệ thống phục vụ khai thác thuận lợi (người dùng), quản lý tài nguyên tối ưu (người quản lý), tạo ra máy tính logic mới (kỹ thuật), hoặc là mô hình mô phỏng hoạt động máy tính và con người (hệ thống).
+Phân loại: Bao gồm hệ thống xử lý theo lô (đơn chương/đa chương), hệ thống chia sẻ thời gian (đa nhiệm), hệ thống thời gian thực, hệ thống song song (nhiều CPU), và hệ thống phân tán.
+4. Các khái niệm cốt lõi trong HĐH
+Tiến trình (Process) và Luồng (Thread): Tiến trình là một chương trình đang thực hiện (trạng thái động), khác với chương trình là thực thể thụ động. Luồng là đơn vị sử dụng CPU cơ bản bên trong tiến trình.
+Tài nguyên hệ thống: Bao gồm bộ vi xử lý (quan tâm đến thời gian xử lý), thiết bị ngoại vi và tài nguyên ảo.
+Bộ xử lý lệnh (Shell): Là nơi giao tiếp giữa người dùng và HĐH, thực hiện nhiệm vụ nhận, phân tích lệnh và phát sinh tiến trình mới.
+Lời gọi hệ thống (System calls): Giao diện để chương trình của người dùng yêu cầu các dịch vụ từ HĐH thông qua các thư viện chương trình con.
+5. Cấu trúc và Dịch vụ
+Thành phần hệ thống: Quản lý tiến trình, bộ nhớ chính, hệ thống vào/ra, file, mạng và hệ thống bảo vệ.
+Giao diện người dùng: Bao gồm dòng lệnh (Command line), bảng chọn (Menu/Popup) và biểu tượng (GUI).
+Dịch vụ: Thi hành chương trình, thao tác nhập xuất, quản lý tập tin, truyền thông và phát hiện lỗi.
+Cấu trúc phổ biến: MS-DOS, UNIX, OS/2, Máy ảo và mô hình Client-Server.
+6. Tính chất cơ bản và Nguyên tắc xây dựng
+Tính chất: Độ tin cậy cao (thông báo chuẩn xác), an toàn (hạn chế truy cập bất hợp pháp), hiệu quả (khai thác triệt để tài nguyên), tổng quát theo thời gian (có tính kế thừa và thích nghi) và thuận tiện (dễ sử dụng).
+Nguyên tắc xây dựng: Sử dụng nguyên tắc modul, tương đối trong định vị, macroprocessor, khởi tạo trong cài đặt, giá trị chuẩn và bảo vệ nhiều mức.
+
+
