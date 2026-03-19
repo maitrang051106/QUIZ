@@ -1,0 +1,131 @@
+PHẦN 1: TỔNG QUAN V VÀ CÁC CẤU TRÚC CHƯƠNG TRÌNH
+
+1. Địa chỉ Logic và Địa chỉ Vật lý
+
+
+
+Địa chỉ Logic (Địa chỉ ảo): Là địa chỉ do CPU sinh ra trong quá trình thực thi tiến trình. Tập hợp tất cả các địa chỉ ảo này gọi là không gian địa chỉ logic.
+
+Địa chỉ Vật lý: Là địa chỉ thực tế tồn tại trên thanh RAM (bộ nhớ vật lý) mà trình quản lý bộ nhớ nhìn thấy và thao tác.
+
+MMU (Memory Management Unit): Là khối phần cứng làm nhiệm vụ chuyển đổi (ánh xạ) từ địa chỉ logic sang địa chỉ vật lý lúc thực thi.
+
+2. Các cấu trúc tổ chức chương trình
+
+
+
+Cấu trúc tuyến tính (Linear): Toàn bộ chương trình được nạp vào một vùng nhớ liên tục. Ưu điểm là thời gian thực hiện cực nhanh và tính lưu động cao. Nhược điểm là lãng phí bộ nhớ và không thể chạy được chương trình có kích thước lớn hơn RAM.
+
+Cấu trúc nạp động (Dynamic Loading): Các module được biên dịch riêng, khi cần dùng đến module nào hệ thống mới xin cấp phát bộ nhớ và nạp module đó vào. Ưu điểm là hiệu quả sử dụng bộ nhớ cao. Nhược điểm là tốc độ chậm và hiệu quả phụ thuộc vào kỹ năng của lập trình viên.
+
+Cấu trúc liên kết động (Dynamic Linking - DLL): Việc liên kết các module hoặc thư viện được trì hoãn cho tới tận thời điểm thực thi (run-time).
+
+Cấu trúc Overlays: Chia chương trình thành các "mức" (level). Các module không hoạt động đồng thời sẽ được dùng chung một vùng nhớ. Ưu điểm lớn nhất là cho phép chạy các chương trình có kích thước lớn hơn không gian bộ nhớ vật lý.
+
+PHẦN 2: CẤP PHÁT BỘ NHỚ LIÊN TỤC
+
+1. Phân chương cố định (Fixed Partitioning)
+
+
+
+Bộ nhớ được chia thành các phần (chương) có kích thước cố định (không nhất thiết bằng nhau).
+
+Tại một thời điểm, mỗi chương chỉ nạp được 1 tiến trình.
+
+Nhược điểm: Gây ra Phân mảnh trong (Phân đoạn trong - Internal Fragmentation), tức là vùng nhớ được cấp cho tiến trình nhưng tiến trình không dùng hết, gây lãng phí. Hệ số song song bị giới hạn bởi số lượng chương.
+
+2. Phân chương động (Dynamic Partitioning)
+
+
+
+Bộ nhớ cấp phát vừa đủ theo đúng yêu cầu của tiến trình.
+
+Nhược điểm: Gây ra Phân mảnh ngoài (Phân đoạn ngoài - External Fragmentation), tức là tổng dung lượng bộ nhớ trống thì đủ để nạp tiến trình, nhưng chúng lại nằm rải rác khắp nơi nên không thể cấp phát.
+
+Giải pháp: Dùng kỹ thuật tái định vị (dịch chuyển tiến trình) hoặc tráo đổi (Swapping) để dồn các vùng trống lại với nhau.
+
+3. Các chiến lược chọn vùng trống (đối với phân chương động)
+
+
+
+First-Fit: Cấp vùng trống đầu tiên đủ lớn để chứa tiến trình.
+
+Best-Fit: Cấp vùng trống nhỏ nhất nhưng đủ lớn để chứa tiến trình (vừa vặn nhất).
+
+Worst-Fit: Cấp vùng trống lớn nhất có sẵn cho tiến trình.
+
+Buddy Allocation (Hệ thống bạn bầy): Cấp phát bộ nhớ theo lũy thừa của 2. Hệ thống chia đôi liên tiếp vùng trống cho đến khi thu được vùng nhỏ nhất $\ge$ yêu cầu. Khi giải phóng, các "bạn" (buddies) kề nhau sẽ được gộp lại thành khối gấp đôi. Thuật toán này rất nhanh nhưng vẫn gây ra phân mảnh trong.
+
+PHẦN 3: CẤP PHÁT BỘ NHỚ KHÔNG LIÊN TỤC
+
+Để giải quyết bài toán phân mảnh, hệ điều hành cho phép tiến trình nằm rải rác ở các vị trí không liên tục.
+
+1. Phân đoạn (Segmentation)
+
+
+
+Bộ nhớ được chia theo cấu trúc logic của chương trình (ví dụ: đoạn code, đoạn data, đoạn stack...).
+
+Địa chỉ logic được biểu diễn bằng hệ tọa độ 2 chiều: <s, d> (trong đó s là số hiệu đoạn, d là độ lệch offset).
+
+Hệ thống dùng Bảng quản lý đoạn (SCB) để theo dõi. Mỗi phần tử SCB chứa Base (Địa chỉ cơ sở) và Limit (Kích thước đoạn).
+
+Cách dịch địa chỉ: CPU kiểm tra nếu d < Limit thì Địa chỉ vật lý = Base + d. Nếu d >= Limit, hệ thống báo Lỗi truy nhập.
+
+Ưu/Nhược: Dễ dàng chia sẻ module (dùng chung đoạn) và bảo vệ. Tuy nhiên, vẫn bị phân mảnh ngoài.
+
+2. Phân trang (Paging)
+
+
+
+Bộ nhớ vật lý được chia thành các khung trang (Frames) có kích thước bằng nhau. Bộ nhớ logic của tiến trình được chia thành các trang (Pages) có kích thước bằng đúng Frame (thường là lũy thừa của 2, VD: 4KB).
+
+Địa chỉ logic là <p, d> (p: số hiệu trang, d: độ lệch trong trang).
+
+Hệ thống dùng Bảng quản lý trang (PCB). Mỗi phần tử của PCB trỏ tới số hiệu Frame trên RAM.
+
+Cách dịch địa chỉ: Lấy số hiệu Frame (f) từ bảng PCB tương ứng với trang (p), ghép với offset (d) sẽ ra địa chỉ vật lý.
+
+Ưu/Nhược: Loại bỏ hoàn toàn phân mảnh ngoài. Tuy nhiên, gặp phải phân mảnh trong ở trang cuối cùng của tiến trình và tốn dung lượng RAM để lưu bảng PCB.
+
+3. Tối ưu hóa trong Phân trang
+
+
+
+Trang nhiều mức (Multi-level Paging): Phân trang ngay trên chính bảng PCB để giải quyết vấn đề bảng PCB quá lớn.
+
+TLB (Translation Look-aside Buffer): Là bộ nhớ cache tốc độ cao dùng để lưu các phép chuyển đổi <Page, Frame> gần nhất. Nó giúp giảm thời gian truy xuất bộ nhớ từ 2 lần xuống gần bằng 1 lần.
+
+4. Phân đoạn kết hợp phân trang
+
+
+
+Chương trình được chia thành các đoạn, sau đó mỗi đoạn lại được chia thành các trang. Địa chỉ là <s, p, d>.
+
+Nếu không có TLB, kỹ thuật này cần tới 3 lần truy cập bộ nhớ vật lý (1 lần đọc SCB, 1 lần đọc PCB, 1 lần đọc dữ liệu thật).
+
+PHẦN 4: BỘ NHỚ ẢO V VÀ CÁC THUẬT TOÁN ĐỔI TRANG (VIRTUAL MEMORY)
+
+1. Khái niệm và Lỗi trang
+
+
+
+Bộ nhớ ảo: Dùng một vùng trên ổ cứng (Backing store / Swap file) để lưu trữ các trang chưa cần dùng tới. Nhờ đó, hệ thống có thể chạy các tiến trình có không gian logic lớn hơn kích thước RAM thực tế.
+
+Lỗi trang (Page Fault): Xảy ra khi tiến trình gọi đến một trang logic mà trang đó chưa được nạp vào RAM (Bit valid-invalid = 0). Đây là một loại Ngắt trong (Trap). Hệ điều hành phải dừng tiến trình, tìm một khung trang trống trên RAM và nạp trang từ đĩa vào.
+
+2. Các thuật toán thay thế trang (Page Replacement)
+
+Khi RAM đã đầy mà xảy ra lỗi trang, hệ thống phải chọn 1 trang đang ở trong RAM để đẩy ra ổ cứng (Swap out) nhường chỗ cho trang mới.
+
+
+
+FIFO (First-In, First-Out): Thay thế trang đã được nạp vào RAM lâu nhất. Dễ cài đặt nhưng dễ gặp phải Nghịch lý Belady (Tăng số lượng khung trang nhưng số lần lỗi trang lại tăng lên).
+
+OPT / MIN (Tối ưu): Thay thế trang mà sẽ lâu nhất trong tương lai mới được sử dụng lại. Thuật toán này cho số lỗi trang thấp nhất nhưng không thể cài đặt trong thực tế (vì không thể đoán trước tương lai).
+
+LRU (Least Recently Used): Thay thế trang có lần sử dụng cuối cùng trong quá khứ cách đây lâu nhất. Thuật toán này rất hiệu quả, không bị nghịch lý Belady, nhưng cần hỗ trợ từ phần cứng (dùng biến đếm thời gian hoặc danh sách liên kết Stack).
+
+LFU (Least Frequently Used): Thay thế trang có tổng số lần (tần suất) sử dụng ít nhất.
+
+MFU (Most Frequently Used): Thay thế trang có tổng số lần sử dụng nhiều nhất (với giả định trang ít dùng là trang vừa mới được nạp vào).

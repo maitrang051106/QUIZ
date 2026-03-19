@@ -1,0 +1,129 @@
+PHẦN 1: KHÁI NIỆM FILE VÀ THƯ MỤC
+
+1. Khái niệm File (Tập tin)
+
+
+
+File là đơn vị lưu trữ logic của hệ điều hành trên bộ nhớ ngoài, bao gồm một tập hợp các bit, byte hoặc bản ghi mang ý nghĩa do người tạo định nghĩa.
+
+Các thuộc tính của file: Tên file (Name), Định danh (Identifier - xác định duy nhất), Kiểu file (Type - .exe, .txt...), Vị trí trên đĩa (Position), Kích thước (Size), Quyền bảo vệ (Protection) và Thời gian tạo/sửa/truy cập,,. Tất cả thông tin này được lưu trong Bản ghi file (File Control Block/Directory entry), còn bản thân các bản ghi này lại được lưu trong Thư mục.
+
+Các thao tác cơ bản:Tạo (Create), Xóa (Delete), Đọc (Read), Ghi (Write), Thu gọn file (Truncate - xóa nội dung nhưng giữ lại thuộc tính),.
+
+Mở/Đóng file (Open/Close): Để tránh việc phải tốn thời gian duyệt tìm thư mục nhiều lần, tiến trình cần gọi lệnh Open file trước khi thao tác,. Hệ thống sẽ đưa thông tin file vào một "Bảng file đang mở", và khi xong việc phải gọi Close file để giải phóng vùng đệm và cập nhật lên đĩa,.
+
+2. Cấu trúc thư mục (Directory Structure)
+
+
+
+Thư mục một mức: Tất cả file nằm chung, dễ bị trùng tên.
+
+Thư mục hai mức: Mỗi người dùng có một thư mục riêng (User file directory).
+
+Thư mục cấu trúc cây: Phổ biến nhất (như DOS, Windows). Có thư mục gốc (Root), phân chia đường dẫn tuyệt đối/tương đối. Khi xóa 1 thư mục, toàn bộ file và thư mục con bên trong cũng bị xóa theo.
+
+Thư mục dùng chung (Đồ thị có hướng): Cho phép tạo liên kết (link) đến một file của người khác. Nhược điểm là khi backup có thể bị duyệt lặp lại nhiều lần.
+
+PHẦN 2: CÁC PHƯƠNG PHÁP PHÂN PHỐI VÙNG LƯU TRỮ (Rất hay thi)
+
+Để lưu trữ nội dung file lên các khối (block) của ổ đĩa, hệ điều hành dùng 3 phương pháp chính:
+
+1. Phân phối liên tục (Continuous Allocation)
+
+
+
+Nguyên tắc: File được cấp phát các khối nhớ nằm liên tiếp nhau trên đĩa,.
+
+Ưu điểm: Tốc độ truy nhập cực nhanh (đầu đọc đĩa không phải dịch chuyển nhiều), hỗ trợ truy cập ngẫu nhiên/trực tiếp tốt.
+
+Nhược điểm: Sinh ra hiện tượng phân mảnh ngoài (các khối trống nằm rải rác không đủ cấp cho file mới) và rất khó để tăng kích thước file sau khi đã tạo.
+
+2. Phân phối liên kết (Linked List Allocation)
+
+
+
+Nguyên tắc: File được phân phối vào các khối nhớ không liên tục. Cuối mỗi khối sẽ chứa một con trỏ chỉ đến địa chỉ của khối tiếp theo của file,. (Bảng FAT chính là một ứng dụng của phương pháp này).
+
+Ưu điểm: Loại bỏ hoàn toàn hiện tượng phân mảnh ngoài,.
+
+Nhược điểm: Tốc độ truy nhập ngẫu nhiên rất chậm (muốn đọc khối $n$ phải duyệt qua $n-1$ khối trước đó); nếu hỏng 1 con trỏ ở giữa sẽ mất toàn bộ dữ liệu phía sau.
+
+3. Phân phối chỉ mục (Indexed Allocation)
+
+
+
+Nguyên tắc: Mỗi file sẽ có riêng một khối chỉ mục (Index block). Khối này chứa một mảng các con trỏ, mỗi con trỏ trỏ trực tiếp đến các khối dữ liệu nằm rải rác của file.
+
+Ưu điểm: Không bị phân mảnh ngoài, hỗ trợ truy cập trực tiếp cực tốt.
+
+Nhược điểm: Tốn kém không gian bộ nhớ để lưu khối chỉ mục, đặc biệt lãng phí nếu file có kích thước rất nhỏ,. Để lưu file lớn, hệ thống phải dùng chỉ mục nhiều mức (khối chỉ mục trỏ tới khối chỉ mục khác).
+
+PHẦN 3: TỔ CHỨC VẬT LÝ VÀ LOGIC CỦA ĐĨA TỪ
+
+Vật lý (H-C-S): Đĩa từ được chia thành các Đầu đọc/Mặt đĩa (Head), các Rãnh đĩa (Track) tập hợp thành các Trụ (Cylinder), và các Cung từ (Sector),. Tọa độ vật lý của 1 ô chứa dữ liệu là <Cylinder, Head, Sector>. Sector là đơn vị trao đổi dữ liệu nhỏ nhất.
+
+Logic (Phân vùng - Partition): Đĩa cứng vật lý được chia thành nhiều ổ logic (C:, D:...).
+
+MBR (Master Boot Record): Nằm ở Sector đầu tiên của toàn bộ đĩa cứng vật lý. Chứa đoạn code mồi và Bảng phân chương (Partition Table).Bảng phân chương có 4 phần tử (mỗi phần tử 16 byte), mô tả vị trí bắt đầu/kết thúc và loại hệ thống file của 4 phân vùng,.
+
+Dấu hiệu nhận biết kết thúc MBR (Chữ ký hệ thống) luôn là 2 byte: 55 AA,.
+
+PHẦN 4: HỆ THỐNG FILE FAT (TRỌNG TÂM BÀI TẬP)
+
+Kiến trúc của một phân vùng định dạng FAT (như FAT16, FAT32) theo thứ tự gồm: Boot Sector $\rightarrow$ Bảng FAT 1 $\rightarrow$ Bảng FAT 2 $\rightarrow$ Thư mục gốc (ROOT) $\rightarrow$ Vùng Dữ liệu (Data/Files).
+
+1. Boot Sector (Sector số 0 của phân vùng)
+
+Chứa Bảng tham số đĩa (BPB). Đề thi thường yêu cầu bạn đọc mã Hex để tìm các thông số:
+
+
+
+Kích thước 1 sector: Thường là 512 bytes (00 02 Hex).
+
+Số sector / 1 cluster: Thường ở Offset 0D (Ví dụ: 08).
+
+Số lượng bảng FAT: Thường là 2.
+
+Mã nhận diện hệ thống FAT: Offset 52h chứa chuỗi ASCII báo hiệu loại FAT (FAT16 hay FAT32).
+
+2. Bảng FAT (File Allocation Table)
+
+Bảng FAT giống như bản đồ của vùng Data. Mỗi phần tử trong FAT đại diện cho 1 Cluster,.
+
+
+
+Nếu Cluster trống: Giá trị là 0.
+
+Nếu Cluster bị hỏng (Bad cluster): Đánh dấu bằng FFF7 (FAT16) hoặc 0FFF FFF7 (FAT32),.
+
+Nếu Cluster chứa dữ liệu: Chứa con trỏ trỏ tới cluster tiếp theo của file.
+
+Nếu là Cluster cuối cùng của file (EOF - End of File): Đánh dấu bằng FFFF (FAT16) hoặc 0FFF FFFF (FAT32),.
+
+3. Thư mục gốc (ROOT) và Bản ghi File
+
+Mỗi file/thư mục được miêu tả bằng một bản ghi dài đúng 32 Bytes trong ROOT,. Nội dung 32 Bytes này đặc biệt quan trọng:
+
+
+
+Tên file (8 byte đầu) + Phần mở rộng (3 byte tiếp): Mã ASCII. Nếu ký tự đầu tiên là E5, nghĩa là file này đã bị xóa. Nếu ký tự là 2E (.), đó là thư mục.
+
+Byte Thuộc tính (Offset 0B): Quy định file là gì.Ví dụ: Chỉ đọc (Read Only - 0x01), Ẩn (Hidden - 0x02), Hệ thống (System - 0x04), Thư mục (Subdirectory - 0x10).
+
+Đặc biệt: Nếu Byte thuộc tính có giá trị 0x0F, đây không phải file thường mà là LFN (Long File Name - Tên file dài),.
+
+Ngày/Giờ: Định dạng mã hóa số nguyên.
+
+Cụm bắt đầu (Starting Cluster): Cung cấp địa chỉ cluster đầu tiên để vào bảng FAT tìm dữ liệu.
+
+Kích thước file (File size): Nằm ở 4 byte cuối cùng (Offset 1C).
+
+4. Hệ thống Tên File Dài (LFN - Long File Name)
+
+Hệ thống FAT cổ điển chỉ hỗ trợ tên file định dạng 8.3. Để hỗ trợ tên dài (VD: This is a very long file name.docx), Windows tạo ra các bản ghi LFN ảo (mang thuộc tính 0x0F) đặt ngay phía trên bản ghi 8.3 thật,.
+
+
+
+Mỗi bản ghi LFN chứa được tối đa 13 ký tự Unicode.
+
+Trường thứ tự của LFN cuối cùng (chứa phần đầu của tên file dài) được cộng thêm cờ 0x40 (Bit 6 = 1) để hệ thống nhận biết điểm kết thúc của chuỗi tên. Mọi ký tự dư thừa trong LFN được lấp đầy bằng FF FF.

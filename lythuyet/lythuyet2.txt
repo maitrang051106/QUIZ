@@ -1,103 +1,201 @@
 PHẦN 1: TIẾN TRÌNH VÀ TRUYỀN THÔNG LIÊN TIẾN TRÌNH
+
 1. Khái niệm và bản chất
+
+
+
 Tiến trình >< Chương trình: Chương trình chỉ là một thực thể thụ động (như nội dung file lưu trên đĩa), chứa đựng mã lệnh và dữ liệu. Tiến trình là trạng thái động của chương trình đó (thực thể chủ động), được sinh ra khi chương trình được nạp vào bộ nhớ và cấp phát tài nguyên để thực thi. Tiến trình bao gồm đoạn mã lệnh, đoạn dữ liệu (biến toàn cục), ngăn xếp (stack chứa biến cục bộ, tham số hàm), bộ đếm lệnh (PC) và các thanh ghi.
-Vòng đời và Trạng thái: Một tiến trình thay đổi liên tục qua 5 trạng thái:
-Khởi tạo (New): Tiến trình đang được tạo lập.
+
+Vòng đời và Trạng thái: Một tiến trình thay đổi liên tục qua 5 trạng thái:Khởi tạo (New): Tiến trình đang được tạo lập.
+
 Sẵn sàng (Ready): Nằm trong bộ nhớ chính, chờ đợi được phân phối CPU.
+
 Thực hiện (Running): Các câu lệnh đang được CPU xử lý. (Hệ thống có 1 VXL thì chỉ có 1 tiến trình ở trạng thái Running).
+
 Chờ đợi/Khóa (Waiting/Blocked): Tiến trình phải dừng lại đợi 1 sự kiện (thường là thao tác I/O hoàn tất).
+
 Kết thúc (Terminated): Tiến trình thực hiện xong, hệ thống thu hồi tài nguyên.
+
 PCB (Khối điều khiển tiến trình): Cấu trúc dữ liệu đại diện cho 1 tiến trình. PCB chứa: Trạng thái, Bộ đếm lệnh, Các thanh ghi CPU, Thông tin điều phối, Giới hạn bộ nhớ, Danh sách file đang mở.
+
 Chuyển ngữ cảnh (Context Switch): Là quá trình hoán đổi CPU. Hệ thống phải lưu lại PCB của tiến trình cũ và nạp lại PCB của tiến trình mới. Thời gian chuyển ngữ cảnh là thời gian lãng phí (overhead).
+
 2. Hàng đợi và Lập lịch
+
+
+
 Hàng đợi: Job queue (chứa tất cả tiến trình), Ready queue (chứa tiến trình đang chờ CPU), Device queue (chứa tiến trình đang chờ I/O của một thiết bị cụ thể).
-Các bộ điều phối (Schedulers):
-Long-term (Điều phối công việc): Đưa tiến trình từ đĩa vào bộ nhớ, kiểm soát "mức độ đa chương trình". Hoạt động không thường xuyên (tính bằng giây/phút), pha trộn giữa tiến trình thiên về tính toán và thiên về I/O.
+
+Các bộ điều phối (Schedulers):Long-term (Điều phối công việc): Đưa tiến trình từ đĩa vào bộ nhớ, kiểm soát "mức độ đa chương trình". Hoạt động không thường xuyên (tính bằng giây/phút), pha trộn giữa tiến trình thiên về tính toán và thiên về I/O.
+
 Short-term (Điều phối CPU): Lấy tiến trình từ Ready queue cấp cho CPU. Thực hiện rất thường xuyên (10-100ms/lần), đòi hỏi tốc độ cực nhanh.
+
 Medium-term (Hoán chuyển - Swapping): Đưa tiến trình ra khỏi bộ nhớ (Swap out) và nạp lại (Swap in) để giải phóng RAM.
+
 3. Thao tác và Truyền thông (IPC)
+
+
+
 Tạo lập/Hủy bỏ: Tiến trình cha có thể tạo tiến trình con (hàm CreateProcess hoặc fork()) tạo thành "Cây tiến trình". Tiến trình cha có thể ép kết thúc tiến trình con (abort) nếu con dùng quá tài nguyên. Nếu cha kết thúc, hệ thống ép các con kết thúc theo (Cascading termination).
-Truyền thông liên tiến trình (IPC): Có 2 mô hình cốt lõi:
-Shared Memory (Dùng chung bộ nhớ): Nhanh nhưng lập trình viên phải tự viết mã đồng bộ.
-Message Passing (Truyền thông điệp): OS cung cấp hàm Send(msg) và Receive(msg).
-Giao tiếp trực tiếp (đích danh tiến trình) hoặc Gián tiếp (qua Hòm thư - Mailboxes / Cổng - Ports).
+
+Truyền thông liên tiến trình (IPC): Có 2 mô hình cốt lõi:Shared Memory (Dùng chung bộ nhớ): Nhanh nhưng lập trình viên phải tự viết mã đồng bộ.
+
+Message Passing (Truyền thông điệp): OS cung cấp hàm Send(msg) và Receive(msg).Giao tiếp trực tiếp (đích danh tiến trình) hoặc Gián tiếp (qua Hòm thư - Mailboxes / Cổng - Ports).
+
 Đồng bộ hóa (Blocking - Gửi/nhận phải chờ) và Bất đồng bộ (Non-blocking).
+
 Vùng đệm thông điệp có sức chứa: Zero capacity (người gửi phải chờ), Bounded (chờ nếu đầy), Unbounded (không bao giờ chờ).
 
 PHẦN 2: LUỒNG (THREAD)
+
 1. Bản chất luồng
+
+
+
 Luồng là đơn vị sử dụng CPU cơ bản nhất nằm trong một tiến trình.
+
 Tính chia sẻ (Share): Các luồng trong cùng 1 tiến trình sẽ dùng chung không gian địa chỉ: Đoạn mã lệnh (Code), Đoạn dữ liệu (Biến toàn cục), và các tài nguyên (file mở).
+
 Tính độc lập (Private): Mỗi luồng bắt buộc phải có riêng ID, Bộ đếm chương trình (PC), Tập thanh ghi (Registers) và Không gian ngăn xếp (Stack) để quản lý hàm/biến cục bộ của riêng nó.
+
 Lợi ích: Tăng tính đáp ứng, chia sẻ tài nguyên tốt, tính kinh tế (chi phí tạo/chuyển luồng rẻ hơn nhiều so với tiến trình), và tận dụng tối đa hệ thống đa vi xử lý.
+
 2. Cài đặt luồng
+
+
+
 Luồng mức người dùng (User-Level Threads): Quản lý bởi thư viện của ứng dụng, OS (nhân) không hề biết. Ưu điểm: Nhanh. Nhược điểm: Nếu 1 luồng gọi lệnh I/O bị khóa (blocked), toàn bộ các luồng khác trong tiến trình đó cũng bị khóa theo.
+
 Luồng mức hệ thống/nhân (Kernel-Level Threads): Do nhân OS trực tiếp tạo và điều phối. Chậm hơn trong khởi tạo, nhưng 1 luồng bị khóa thì luồng khác vẫn chạy, có thể chạy song song trên nhiều CPU (VD: Windows, Linux).
+
 Mô hình ánh xạ: Nhiều-Một (N luồng User ánh xạ vào 1 luồng Kernel); Một-Một (1 User - 1 Kernel); Nhiều-Nhiều (Mô hình kết hợp linh hoạt nhất) và Mô hình 2 mức (Kết hợp Nhiều-Nhiều và Một-Một cho các luồng ưu tiên).
 
 PHẦN 3: ĐIỀU PHỐI CPU (CPU SCHEDULING)
+
 1. Các nguyên tắc cơ bản
+
+
+
 Tiêu chuẩn tối ưu: Tối đa hóa Độ sử dụng CPU và Thông lượng (Throughput). Tối thiểu hóa Thời gian hoàn thành (Turnaround time), Thời gian chờ đợi (Waiting time) và Thời gian đáp ứng (Response time).
-2 Phương thức cấp phát:
-Không trưng dụng (Non-preemptive): Tiến trình độc chiếm CPU cho đến khi nó tự nhả ra (do kết thúc hoặc chờ I/O).
+
+2 Phương thức cấp phát:Không trưng dụng (Non-preemptive): Tiến trình độc chiếm CPU cho đến khi nó tự nhả ra (do kết thúc hoặc chờ I/O).
+
 Có trưng dụng (Preemptive): OS có quyền tước đoạt CPU giữa chừng nếu hết thời lượng (lượng tử thời gian) hoặc có tiến trình ưu tiên cao hơn chen ngang.
+
 2. Phân tích chi tiết các thuật toán điều phối
+
+
+
 FCFS (First Come First Served): Không trưng dụng. Đến trước phục vụ trước. Dễ cài đặt nhưng gây ra hiệu ứng đoàn tàu (Convoy effect) khiến thời gian chờ trung bình rất lớn nếu có 1 tiến trình dài đứng đầu.
+
 SJF (Shortest Job First): Không trưng dụng. Tiến trình nào có thời gian chạy kế tiếp ngắn nhất sẽ được ưu tiên. Đây là thuật toán tối ưu nhất về thời gian chờ trung bình.
+
 SRTF (Shortest Remaining Time First): Là phiên bản Có trưng dụng của SJF. Nếu tiến trình mới đến có thời gian chạy ngắn hơn thời gian "còn lại" của tiến trình đang chạy, HĐH sẽ tước CPU ngay. Nhược điểm lớn của SJF/SRTF là gây ra nạn đói (Starvation) cho các tiến trình dài.
+
 Priority (Độ ưu tiên): Ưu tiên tiến trình có tham số ưu tiên cao (số nhỏ/lớn tùy HĐH). Cũng dễ sinh ra nạn đói. Cách khắc phục: Aging (Tăng dần độ ưu tiên theo thời gian chờ).
-Round Robin (RR - Vòng tròn): Có trưng dụng. Dùng riêng cho hệ thống chia sẻ thời gian. Mỗi tiến trình nhận 1 lượng tử thời gian ($q$, khoảng 10-100ms). Hết $q$, tiến trình bị đẩy về cuối Ready queue. $q$ quá lớn -> FCFS; $q$ quá nhỏ $\rightarrow$ Chi phí Context Switch lấn át làm giảm hiệu năng.
+
+Round Robin (RR - Vòng tròn): Có trưng dụng. Dùng riêng cho hệ thống chia sẻ thời gian. Mỗi tiến trình nhận 1 lượng tử thời gian ($q$, khoảng 10-100ms). Hết $q$, tiến trình bị đẩy về cuối Ready queue. $q$ quá lớn $\rightarrow$ FCFS; $q$ quá nhỏ $\rightarrow$ Chi phí Context Switch lấn át làm giảm hiệu năng.
+
 Hàng đợi đa mức (Multilevel Queue): Phân các tiến trình vào các hàng đợi cố định (Foreground dùng RR, Background dùng FCFS).
+
 Hồi tiếp đa mức (Multilevel Feedback Queue): Tiến trình được quyền "leo" lên hoặc "tụt" xuống giữa các hàng đợi. Nếu ngốn quá nhiều CPU $\rightarrow$ Đẩy xuống hàng ưu tiên thấp. Nếu chờ quá lâu $\rightarrow$ Đẩy lên hàng ưu tiên cao (tránh starvation).
+
 3. Điều phối Đa xử lý (Multiprocessor)
+
+
+
 Đa xử lý không đối xứng (ASMP): 1 CPU Master làm nhiệm vụ điều phối và cấp phát cho các CPU Slaves (dễ bị thắt cổ chai tại Master).
+
 Đa xử lý đối xứng (SMP): Mọi CPU bình đẳng, tự chạy thuật toán điều phối. Nếu dùng 1 hàng đợi chung (Global queue) dễ bị tranh chấp tài nguyên; nếu dùng hàng đợi riêng (Local queue) dễ bị mất cân bằng tải (Load imbalance).
 
 PHẦN 4: ĐỒNG BỘ TIẾN TRÌNH VÀ TÀI NGUYÊN GĂNG
+
 1. Bản chất vấn đề
+
+
+
 Tài nguyên găng (Critical Resource): Là tài nguyên giới hạn khả năng dùng chung (VD: biến toàn cục, máy in).
+
 Điều kiện cạnh tranh (Race Condition): Kết quả tính toán bị sai lệch phụ thuộc vào thứ tự thực thi đan xen của các luồng/tiến trình.
-Đoạn găng (Critical Section): Đoạn mã thao tác lên tài nguyên găng. Để đồng bộ, phải thỏa mãn 3 yêu cầu:
-(1) Loại trừ lẫn nhau: Chỉ 1 tiến trình được ở trong đoạn găng.
+
+Đoạn găng (Critical Section): Đoạn mã thao tác lên tài nguyên găng. Để đồng bộ, phải thỏa mãn 3 yêu cầu:(1) Loại trừ lẫn nhau: Chỉ 1 tiến trình được ở trong đoạn găng.
+
 (2) Tiến triển: Nếu đoạn găng rảnh, phải cho phép tiến trình muốn vào được vào.
+
 (3) Chờ đợi hữu hạn: Tiến trình không bị chặn bên ngoài vô thời hạn (starvation).
+
 2. Các giải pháp Cấp thấp (Phần cứng / Cờ hiệu)
+
+
+
 Phương pháp khóa trong (Lock variable): Dùng biến bool C1, C2. Thất bại vì thao tác kiểm tra khóa và đóng khóa bị tách rời, vi phạm cả tính Loại trừ lẫn nhau và Tiến triển.
+
 Thuật toán Dekker: Dùng thêm biến turn. Giải quyết được 3 yêu cầu nhưng cực kỳ phức tạp và gây ra chờ đợi tích cực (Busy Waiting - Spinlock), làm lãng phí CPU.
+
 Lệnh TestAndSet / Swap: Lệnh phần cứng thực hiện nguyên thủy (Atomically - không bị chia cắt). Giải quyết được loại trừ lẫn nhau nhưng vẫn dính Busy Waiting và vi phạm chờ đợi hữu hạn.
+
 3. Giải pháp Đèn báo (Semaphore - Cốt lõi của bài toán)
-Khái niệm: Do Dijkstra đề xuất. Là biến nguyên $S$. Chỉ thay đổi bằng 2 thao tác nguyên thủy:
-wait(S) hay P(S): Giảm S đi 1. Nếu $S < 0$, tiến trình bị đưa vào hàng đợi block() (không lãng phí CPU). Nếu $S \ge 0$, tiến trình được đi tiếp.
+
+
+
+Khái niệm: Do Dijkstra đề xuất. Là biến nguyên $S$. Chỉ thay đổi bằng 2 thao tác nguyên thủy:wait(S) hay P(S): Giảm S đi 1. Nếu $S < 0$, tiến trình bị đưa vào hàng đợi block() (không lãng phí CPU). Nếu $S \ge 0$, tiến trình được đi tiếp.
+
 signal(S) hay V(S): Tăng S lên 1. Nếu $S \le 0$, có nghĩa là đang có tiến trình bị khóa, hệ thống sẽ wakeup() một tiến trình cho nó chạy.
+
 Loại bỏ Busy Waiting: Cơ chế block/wakeup của Semaphore hoàn toàn khắc phục được sự lãng phí CPU của chờ đợi tích cực.
+
 Lưu ý thi: Đặt sai thứ tự $P(S)$ và $V(S)$ sẽ gây lỗi hoặc Bế tắc (Deadlock).
+
 4. Giải pháp Cấp cao (Monitor)
+
+
+
 Là kiểu dữ liệu đặc biệt (class/module). Chỉ 1 tiến trình được hoạt động bên trong Monitor tại 1 thời điểm.
+
 Cung cấp các Biến điều kiện (Condition variables - VD: x, y) với lệnh x.wait() (ngủ) và x.signal() (đánh thức).
+
 5. Các bài toán kinh điển
+
+
+
 Producer-Consumer (Người sản xuất - Người tiêu thụ): Cần 3 Semaphore: mutex=1 (khóa Buffer), empty=N (đếm chỗ trống), full=0 (đếm sản phẩm).
-Dining Philosophers (Bữa ăn của triết gia): Có 5 triết gia, 5 cái dĩa (Semaphore). Nếu tất cả cùng lấy dĩa bên trái -> Deadlock. Cách giải quyết: Giới hạn 4 người ăn, hoặc quy định người chẵn lấy dĩa trái trước, người lẻ lấy dĩa phải trước.
+
+Dining Philosophers (Bữa ăn của triết gia): Có 5 triết gia, 5 cái dĩa (Semaphore). Nếu tất cả cùng lấy dĩa bên trái $\rightarrow$ Deadlock. Cách giải quyết: Giới hạn 4 người ăn, hoặc quy định người chẵn lấy dĩa trái trước, người lẻ lấy dĩa phải trước.
 
 PHẦN 5: BẾ TẮC (DEADLOCK)
+
 1. Khái niệm và Điều kiện
+
+
+
 Khái niệm: Tình trạng các tiến trình giữ tài nguyên của mình và chờ đợi tài nguyên mà tiến trình khác đang giữ $\rightarrow$ chờ đợi vòng tròn vô hạn.
-4 Điều kiện cần (Phải có đủ cả 4):
-(1) Có tài nguyên găng (Mutual exclusion).
+
+4 Điều kiện cần (Phải có đủ cả 4):(1) Có tài nguyên găng (Mutual exclusion).
+
 (2) Chờ đợi trước khi vào đoạn găng (Hold and wait - Giữ và chờ).
+
 (3) Không được trưng dụng (No preemption) - Tài nguyên chỉ được nhả tự nguyện.
+
 (4) Chờ đợi vòng tròn (Circular wait).
+
 Đồ thị cung cấp tài nguyên (RAG): Đỉnh Tròn (Tiến trình), Đỉnh Vuông (Tài nguyên). Cung yêu cầu ($P \to R$), Cung sử dụng ($R \to P$). Đồ thị CÓ CHU TRÌNH và tài nguyên CHỈ CÓ 1 ĐƠN VỊ $\rightarrow$ Chắc chắn Bế tắc.
+
 2. Các hướng xử lý Bế tắc
-Phòng ngừa (Prevention): Đập vỡ 1 trong 4 điều kiện.
-Phá "Tài nguyên găng" bằng kỹ thuật SPOOL (Máy in ảo).
+
+
+
+Phòng ngừa (Prevention): Đập vỡ 1 trong 4 điều kiện.Phá "Tài nguyên găng" bằng kỹ thuật SPOOL (Máy in ảo).
+
 Phá "Giữ và chờ" bằng cách bắt tiến trình xin TẤT CẢ tài nguyên cùng lúc trước khi chạy (gây lãng phí).
+
 Phá "Chờ đợi vòng tròn" bằng cách đánh số thứ tự tài nguyên, bắt buộc xin theo trật tự tăng dần.
-Phòng tránh (Avoidance): Thuật toán người quản lý nhà băng (Banker's Algorithm) của Dijkstra.
-Yêu cầu: Biết trước nhu cầu Max của từng tiến trình.
+
+Phòng tránh (Avoidance): Thuật toán người quản lý nhà băng (Banker's Algorithm) của Dijkstra.Yêu cầu: Biết trước nhu cầu Max của từng tiến trình.
+
 Cơ chế: Khi tiến trình xin tài nguyên, hệ thống "giả vờ" cấp phát, sau đó kiểm tra xem trạng thái hệ thống có còn An toàn (Safe) hay không. An toàn là tìm được 1 chuỗi thực thi (Safe sequence) để mọi tiến trình đều có thể mượn đủ tài nguyên và kết thúc. Nếu An toàn $\rightarrow$ Cấp phát thật. Nếu Không an toàn $\rightarrow$ Bắt tiến trình đó phải đợi.
+
 Công thức: Need = Max - Allocation. Tìm tiến trình có Need <= Available. Chạy xong trả lại Available = Available + Allocation.
-Nhận biết và Khắc phục (Detection & Recovery): Cứ để hệ thống chạy, khi bị bế tắc thì tìm chu trình trong đồ thị Chờ đợi (Wait-for graph).
-Khắc phục: Hủy bỏ các tiến trình (tất cả hoặc từng cái một) hoặc Trưng dụng (tước đoạt) tài nguyên của tiến trình khác.
+
+Nhận biết và Khắc phục (Detection & Recovery): Cứ để hệ thống chạy, khi bị bế tắc thì tìm chu trình trong đồ thị Chờ đợi (Wait-for graph).Khắc phục: Hủy bỏ các tiến trình (tất cả hoặc từng cái một) hoặc Trưng dụng (tước đoạt) tài nguyên của tiến trình khác.
+
 Rủi ro khi tước đoạt: Phải Roll-back (quay lui) trạng thái, và dễ gây ra nạn đói (Starvation) nếu 1 tiến trình liên tục bị đem ra làm "nạn nhân". Giải pháp "Con đà điểu" (Ostrich algorithm) được dùng khi bế tắc rất hiếm khi xảy ra: bỏ qua nó luôn.
-
-

@@ -1,0 +1,59 @@
+PHẦN 1: LÝ THUYẾT CỐT LÕI
+
+1. Nguyên tắc quản lý thiết bị ngoại vi (TBNV)
+
+Phân loại TBNV: Chia thành 2 loại chính:
+
+Thiết bị khối (Block): Đĩa từ, băng từ. Dữ liệu có kích thước cố định, có địa chỉ riêng, đọc/ghi độc lập và có thao tác định vị (seek).
+
+Thiết bị ký tự (Character): Máy in, bàn phím. Nhận luồng ký tự, không có cấu trúc khối, không có thao tác định vị,.
+
+Thiết bị điều khiển (Device Controller): CPU không điều khiển trực tiếp TBNV mà thông qua Thiết bị điều khiển (giống như phần cứng trung gian). Mỗi thiết bị điều khiển có các thanh ghi riêng để làm việc với CPU (gọi là cổng vào/ra).
+
+Trình điều khiển thiết bị (Device Driver): Là một đoạn mã trong nhân hệ điều hành (phần mềm) giúp giao tiếp trực tiếp với phần cứng, cung cấp giao diện lập trình chuẩn (như lệnh read, write, open, close) cho các ứng dụng.
+
+Giao tiếp HĐH và Thiết bị: Có 2 phương pháp:
+
+Ngắt (Interrupts): Thiết bị phát tín hiệu báo cho CPU biết nó đã hoàn thành nhiệm vụ hoặc gặp lỗi. Khi có ngắt, CPU dừng việc hiện tại để chạy chương trình xử lý ngắt,,.
+
+Thăm dò (Polling): CPU liên tục kiểm tra thanh ghi trạng thái của thiết bị. Thường gây lãng phí CPU nếu thiết bị rảnh.
+
+Phân loại ngắt: Theo nguồn gốc (ngắt trong/ngoài), theo thiết bị (cứng/mềm), theo khả năng quản lý (che được/không che được). Ngắt trong thường do chính quá trình tính toán hoặc thực thi của tiến trình sinh ra (VD: lỗi chia cho 0, lỗi trang),.
+
+2. Các dịch vụ vào/ra của hệ thống
+
+Vùng đệm (Buffer): Là vùng nhớ trung gian giúp giải quyết sự chênh lệch tốc độ giữa thiết bị ngoại vi (rất chậm) và CPU (rất nhanh).
+
+Vùng đệm gắn với thiết bị: Chỉ tạo khi mở file/thiết bị và tự xóa khi đóng lại.
+
+Vùng đệm gắn với hệ thống: Tạo ra khi khởi động máy, tồn tại suốt quá trình hoạt động của hệ thống.
+
+Kỹ thuật SPOOL (Simultaneous Peripheral Operation On-Line): Là kỹ thuật dùng phần mềm mô phỏng một thiết bị vật lý thành thiết bị ảo dùng chung (điển hình nhất là Máy in ảo),. Nhờ kỹ thuật này, hệ thống phá vỡ được điều kiện "tài nguyên găng độc chiếm", giúp ngăn ngừa bế tắc.
+
+
+
+--------------------------------------------------------------------------------
+
+PHẦN 2: TRỌNG TÂM HAY THI BÀI TẬP (ĐIỀU PHỐI ĐĨA TỪ)
+
+Để đọc dữ liệu trên đĩa từ, thời gian tốn kém nhất là Thời gian định vị (Seek time) – thời gian cơ học để cánh tay di chuyển đầu đọc tới đúng Cylinder (rãnh) cần thiết. Do đó, HĐH phải có các thuật toán sắp xếp lại hàng đợi truy xuất đĩa để quãng đường đầu đọc di chuyển là ngắn nhất.
+
+🔥 Dạng Bài Tập Tính Toán (Chắc chắn có thi): Thuật toán điều phối đĩa (Disk Scheduling)
+
+Dấu hiệu nhận biết: Đề bài cho "Đầu đọc đang ở Cylinder X. Hàng đợi yêu cầu là một chuỗi các Cylinder: A, B, C, D...". Yêu cầu tính "tổng quãng đường dịch chuyển của đầu đọc" hoặc "thứ tự các Cylinder được phục vụ",,.
+
+Cách giải: Bạn phải vẽ trục số ra nháp và di chuyển đầu đọc theo đúng nguyên tắc của từng thuật toán:
+
+FCFS (Đến trước phục vụ trước): Đầu đọc đi đúng theo thứ tự mảng đề bài cho. Thường có tổng quãng đường rất lớn, không tối ưu.
+
+SSTF (Shortest Seek Time First): Tại vị trí hiện tại, Cylinder nào có khoảng cách gần nhất thì đầu đọc chạy tới đó trước. Thuật toán này tốt nhưng có nhược điểm lớn là dễ gây ra tình trạng "đợi vô hạn" (Starvation) cho các yêu cầu nằm ở quá xa,.
+
+SCAN (Thuật toán thang máy): Đầu đọc di chuyển về một phía của đĩa (đi ra ngoài cùng hoặc vào trong cùng), phục vụ tất cả các yêu cầu trên đường đi. Chạm tới đầu mút của đĩa rồi mới quay ngược lại,.
+
+C-SCAN (Circular SCAN): Giống SCAN, nhưng khi quét tới một đầu mút của đĩa, đầu đọc sẽ lập tức phi một mạch về đầu mút bên kia (không phục vụ ai trên đường về), rồi tiếp tục quét lại theo một chiều,,.
+
+LOOK: Là phiên bản tối ưu của SCAN. Đầu đọc cũng quét qua lại 2 bên, nhưng thay vì đi đâm sầm vào tận cùng mép đĩa (cylinder 0 hoặc max), nó chỉ đi đến yêu cầu xa nhất rồi quay đầu luôn,.
+
+C-LOOK: Là phiên bản tối ưu của C-SCAN. Cũng vòng lại ngay, nhưng quay về cái yêu cầu thấp nhất chứ không phải là Cylinder 0,.
+
+(💡 Mẹo làm bài thi: Đề thi cực kỳ hay lừa sự khác nhau giữa SCAN và LOOK. Nếu đề bảo dùng SCAN, bạn nhớ phải cho đầu đọc chạm mốc 0 (hoặc Cylinder to nhất) rồi mới cộng dồn quãng đường quay lại. Còn dùng LOOK thì chỉ chạm đến con số lớn nhất/nhỏ nhất xuất hiện trong hàng đợi thôi!)

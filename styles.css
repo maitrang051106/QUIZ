@@ -20,3 +20,146 @@ h1 { color: var(--p); text-align: center; }
 .back-btn { margin-bottom: 20px; padding: 10px 20px; cursor: pointer; background: var(--p); color: white; border: none; border-radius: 5px; }
 
 #theory-content { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); line-height: 1.6; color: #333; font-size: 16px; }
+
+/* Style cho nội dung lý thuyết */
+#theory-content {
+    text-align: left;
+    padding: 20px;
+    line-height: 1.8;
+    color: #2c3e50;
+}
+
+#theory-content h2 { 
+    color: #2980b9; 
+    border-bottom: 2px solid #2980b9; 
+    padding-bottom: 5px; 
+    margin-top: 30px;
+}
+
+#theory-content h3 { 
+    color: #16a085; 
+    margin-top: 25px; 
+    background: #f1f9f7;
+    padding: 5px 10px;
+    border-left: 4px solid #16a085;
+}
+
+#theory-content strong { color: #e67e22; } /* Làm nổi bật các từ khóa quan trọng */
+
+#theory-content ul { padding-left: 20px; }
+
+#theory-content li { margin-bottom: 8px; }
+
+.highlight-box {
+    background: #fff3cd;
+    border: 1px solid #ffeeba;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+}
+
+/* Highlight văn bản được chọn */
+.text-highlight {
+    background-color: #ffff00;
+    /* Không có padding để bảo toàn khoảng trắng chính xác */
+}
+
+/* Nút nổi Bật/Tắt Highlight ở góc phải bên dưới */
+.highlight-toggle-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #f39c12;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+    z-index: 1000;
+    transition: 0.3s;
+}
+
+.highlight-toggle-btn:hover {
+    background-color: #e67e22;
+    transform: scale(1.05);
+}
+/* Giao diện Split View (Chia đôi màn hình) */
+#split-view {
+    width: 100%;
+    max-width: 1400px; /* Tăng chiều rộng để vừa 2 khung */
+    margin: 0 auto;
+}
+
+.header-controls {
+    display: flex;
+    align-items: center; /* Căn giữa theo chiều dọc */
+    justify-content: space-between; /* Đẩy nút back sang trái, tiêu đề sang giữa */
+    background: #f8f9fa;
+    padding: 10px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.back-btn {
+    flex-shrink: 0; /* Ngăn nút back bị co lại */
+    /* Giữ nguyên các style khác của nút back */
+}
+
+#chapter-title {
+    flex-grow: 1; /* Cho phép tiêu đề chiếm hết không gian còn lại */
+    text-align: center; /* Căn giữa văn bản tiêu đề */
+    margin: 0; /* Xóa margin mặc định */
+    color: #343a40;
+    /* Giữ nguyên các style font chữ khác */
+}
+.split-container {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+/* Từng khung (Lý thuyết / Quiz) */
+.panel {
+    flex: 1; /* Chia đều 50-50 */
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    height: 75vh; /* Chiều cao cố định bằng 75% màn hình */
+    overflow-y: auto; /* Có thanh cuộn dọc riêng */
+}
+
+.panel-title {
+    text-align: center;
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    
+    /* CÁC DÒNG THÊM MỚI ĐỂ CHE KÍN KHOẢNG TRỐNG */
+    margin-top: -20px;    /* Kéo giãn lên trên để ăn gian phần padding của panel */
+    margin-left: -20px;   /* Kéo giãn sang trái */
+    margin-right: -20px;  /* Kéo giãn sang phải */
+    padding: 20px 20px 10px 20px; /* Bù lại khoảng lề bên trong tiêu đề cho đẹp */
+    
+    position: sticky;
+    top: -20px; /* Phải để -20px để nó bám dính sát lên mép trên cùng của khung */
+    background: white; /* Nền trắng lúc này sẽ che khuất hoàn toàn chữ cuộn bên dưới */
+    z-index: 10;
+    
+    /* Bo góc phần trên để không bị chĩa nhọn ra ngoài khung */
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+/* Chỉnh thanh cuộn cho đẹp (Webkit) */
+.panel::-webkit-scrollbar { width: 8px; }
+.panel::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+.panel::-webkit-scrollbar-thumb { background: #bdc3c7; border-radius: 4px; }
+.panel::-webkit-scrollbar-thumb:hover { background: #95a5a6; }
+
+/* Responsive: Nếu màn hình nhỏ (Điện thoại/Tablet) thì xếp dọc */
+@media (max-width: 900px) {
+    .split-container { flex-direction: column; }
+    .panel { width: 100%; height: auto; max-height: 60vh; margin-bottom: 20px; }
+}
